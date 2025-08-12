@@ -13,7 +13,7 @@ app.use(express.json());
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true); // allow non-browser tools
 
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -24,12 +24,21 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
+app.options('*', cors()); // enable preflight requests for all routes
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
 const routes = require('./routes/mail');
 app.use("/api/mail", routes);
+
+app.use((err, req, res, next) => {
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).send('CORS Error: Origin not allowed');
+  }
+  next(err);
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
