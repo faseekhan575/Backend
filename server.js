@@ -5,11 +5,12 @@ const cors = require('cors');
 const app = express();
 const port = 3001;
 
+app.use(express.json());
 const allowedOrigins = process.env.ALLOWED_ORIGIN
-? process.env.ALLOWED_ORIGIN.split(',').map(origin => origin.trim())
-: [];
-
-  app.use(cors({
+  ? process.env.ALLOWED_ORIGIN.split(',').map(origin => origin.trim())
+  : [];
+console.log(allowedOrigins);
+app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
@@ -18,7 +19,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGIN
     return callback(new Error('Not allowed by CORS'));
   },
 }));
-app.use(express.json());
+app.options('*', cors());
 
 
 app.get('/', (req, res) => {
