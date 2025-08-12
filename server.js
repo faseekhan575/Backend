@@ -19,7 +19,6 @@ app.use(cors({
     return callback(new Error('Not allowed by CORS'));
   },
 }));
-app.options('*', cors());
 
 
 app.get('/', (req, res) => {
