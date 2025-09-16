@@ -1,16 +1,16 @@
 const { sendEmail } = require("./mailer");
 exports.send = async (req, res) => {
-    try {
+  try {
 
-        const {order_number, to, productarr, c_name, c_email, c_phone, c_address, payment_method, shipping_method, expected_delivery } = req.body;
+    const { order_number, to, productarr, c_name, c_email, c_phone, c_address, payment_method, shipping_method, expected_delivery } = req.body;
 
-        const subject = "New Order Notification";
+    const subject = "New Order Notification";
 
-        const order_total = productarr.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const order_total = productarr.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-        const order_date = new Date().toLocaleDateString();
+    const order_date = new Date().toLocaleDateString();
 
-        const html = `
+    const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,11 +165,146 @@ exports.send = async (req, res) => {
 </html>
 `;
 
-        const response = await sendEmail(to, subject, html);
-        res.status(200).json("Email sent successfully");
+    const response = await sendEmail(to, subject, html);
+
+    res.status(200).json("Email sent successfully");
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+}
+exports.usermail = async (req, res) => {
+  console.log(req.body);
+  try {
+
+    const { order_number, to, productarr, c_name, c_phone, c_address, payment_method, shipping_method, expected_delivery } = req.body;
+    const order_total = productarr.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    const order_date = new Date().toLocaleDateString();
+    const html = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Order Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f6f6f6;
+      margin: 0;
+      padding: 20px;
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).json(err);
+    .container {
+      max-width: 650px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
     }
+    .header {
+      background: #0f62fe;
+      color: #fff;
+      padding: 20px;
+    }
+    .header h2 {
+      margin: 0;
+    }
+    .content {
+      padding: 20px;
+      color: #333;
+    }
+    .content h3 {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 6px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      font-size: 14px;
+    }
+    th {
+      background: #f1f1f1;
+      text-align: left;
+    }
+    .footer {
+      background: #f1f1f1;
+      text-align: center;
+      padding: 15px;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Order Confirmation</h2>
+      <p>Order #${order_number} | ${order_date}</p>
+    </div>
+    <div class="content">
+      <p>Hi <strong>${c_name}</strong>,</p>
+      <p>Thank you for your order! Here are the details:</p>
+
+      <h3>Customer Information</h3>
+      <p>
+        <strong>Email:</strong> ${to}<br>
+        <strong>Phone:</strong> ${c_phone}<br>
+        <strong>Address:</strong> ${c_address}
+      </p>
+
+      <h3>Order Items</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${productarr.map(item => `
+            <tr>
+              <td>${item.name}</td>
+              <td>${item.quantity}</td>
+              <td>$${item.price.toFixed(2)}</td>
+              <td>PKR ${(item.price * item.quantity).toFixed(2)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      <h3>Order Summary</h3>
+      <p>
+        <strong>Payment Method:</strong> ${payment_method}<br>
+        <strong>Shipping Method:</strong> ${shipping_method}<br>
+        <strong>Expected Delivery:</strong> ${expected_delivery}<br>
+        <strong>Order Total:</strong> PKR ${order_total.toFixed(2)}
+      </p>
+
+      <p>W'll notify you once your order has been shipped.</p>
+      <p>Thank you for shopping with us!</p>
+    </div>
+    <div class="footer">
+      © ${new Date().getFullYear()} Your Store. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>
+`
+    await sendEmail(to, "Order Confirmation", html);
+    res.status(200).json("Email sent successfully");
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
 }
