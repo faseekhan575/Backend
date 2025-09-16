@@ -275,7 +275,7 @@ exports.usermail = async (req, res) => {
             <tr>
               <td>${item.name}</td>
               <td>${item.quantity}</td>
-              <td>$${item.price.toFixed(2)}</td>
+              <td>PKR ${item.price.toFixed(2)}</td>
               <td>PKR ${(item.price * item.quantity).toFixed(2)}</td>
             </tr>
           `).join('')}
