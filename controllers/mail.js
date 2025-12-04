@@ -165,7 +165,7 @@ exports.send = async (req, res) => {
 </html>
 `;
 
-    const response = await sendEmail(to, subject, html);
+    const response = await sendEmail(to, subject,"", html);
 
     res.status(200).json("Email sent successfully");
   }
