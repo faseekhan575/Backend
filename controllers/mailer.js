@@ -18,7 +18,7 @@ const sendEmail = async (to, subject, text, html) => {
     const gmail = google.gmail({ version: "v1", auth: oAuth2Client });
 
     const messageParts = [
-      `From: "XLMS Support" <${USER_EMAIL}>`,
+      `From: "KLEENORA STORE" <${USER_EMAIL}>`,
       `To: ${to}`,
       `Subject: ${subject}`,
       "MIME-Version: 1.0",
